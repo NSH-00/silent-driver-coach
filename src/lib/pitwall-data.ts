@@ -25,6 +25,10 @@ export const laps: Lap[] = [
   { lap: 25, time: 89.941, mood: "CALM" },
 ];
 
+import visualCalm from "@/assets/visual-calm.jpg";
+import visualTired from "@/assets/visual-tired.jpg";
+import visualStressed from "@/assets/visual-stressed.jpg";
+
 export type Sample = {
   id: string;
   label: string;
@@ -32,6 +36,10 @@ export type Sample = {
   mood: Mood;
   duration: number; // seconds of the radio clip
   transcript: string;
+  translation: string;
+  translationLang: string;
+  visual: string;
+  visualPrompt: string;
   stress: number; // 0-100
   pitch: number; // 0-100
 };
@@ -45,6 +53,11 @@ export const samples: Sample[] = [
     duration: 7.4,
     transcript:
       "> RADIO IN // LAP 14\nDRIVER: Car feels good, balance is where I want it.\nDRIVER: I can hold this pace, no problem.\nENGINEER: Copy that. Keep it steady, target plus zero.",
+    translation:
+      "> TRADUZIONE // GIRO 14\nPILOTA: La macchina va bene, il bilanciamento è dove lo voglio.\nPILOTA: Posso mantenere questo ritmo, nessun problema.\nINGEGNERE: Ricevuto. Tieni costante, target più zero.",
+    translationLang: "IT / Italian",
+    visual: visualCalm,
+    visualPrompt: "stable tyre, balanced grip, steady pace",
     stress: 18,
     pitch: 34,
   },
@@ -56,6 +69,11 @@ export const samples: Sample[] = [
     duration: 9.1,
     transcript:
       "> RADIO IN // LAP 18\nDRIVER: He pushed me wide! That's twice now, do something!\nDRIVER: I'm losing the rear everywhere, this is not working!\nENGINEER: Understood, breathe. We are on it.",
+    translation:
+      "> TRADUZIONE // GIRO 18\nPILOTA: Mi ha spinto fuori! È la seconda volta, fate qualcosa!\nPILOTA: Perdo il posteriore ovunque, così non funziona!\nINGEGNERE: Capito, respira. Ci stiamo lavorando.",
+    translationLang: "IT / Italian",
+    visual: visualStressed,
+    visualPrompt: "hazard alert, contact incident, rear instability",
     stress: 88,
     pitch: 91,
   },
@@ -67,10 +85,16 @@ export const samples: Sample[] = [
     duration: 8.2,
     transcript:
       "> RADIO IN // LAP 22\nDRIVER: Fronts are gone... I'm just managing now.\nDRIVER: How many laps left? Getting heavy in here.\nENGINEER: Four to go. Lift and coast turn nine.",
+    translation:
+      "> TRADUZIONE // GIRO 22\nPILOTA: Le anteriori sono finite... ora sto solo gestendo.\nPILOTA: Quanti giri restano? Si fa pesante qui dentro.\nINGEGNERE: Quattro alla fine. Lift and coast in curva nove.",
+    translationLang: "IT / Italian",
+    visual: visualTired,
+    visualPrompt: "worn front tyre, degradation, pace drop",
     stress: 52,
     pitch: 46,
   },
 ];
+
 
 export const moodMeta: Record<Mood, { dot: string; text: string; icon: string }> = {
   CALM: { dot: "bg-calm", text: "text-calm", icon: "🟢" },

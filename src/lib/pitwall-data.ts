@@ -61,11 +61,9 @@ export const samples: Sample[] = [
     duration: 7.4,
     transcript:
       "> RADIO IN // LAP 14\nDRIVER: Car feels good, balance is where I want it.\nDRIVER: I can hold this pace, no problem.\nENGINEER: Copy that. Keep it steady, target plus zero.",
-    translation:
-      "> TRADUZIONE // GIRO 14\nPILOTA: La macchina va bene, il bilanciamento è dove lo voglio.\nPILOTA: Posso mantenere questo ritmo, nessun problema.\nINGEGNERE: Ricevuto. Tieni costante, target più zero.",
-    translationLang: "IT / Italian",
-    visual: visualCalm,
-    visualPrompt: "stable tyre, balanced grip, steady pace",
+    stress: 18,
+    pitch: 34,
+  },
     stress: 18,
     pitch: 34,
   },

@@ -79,7 +79,46 @@ export function AnalysisPanel({
         <pre className="dot-text mt-4 min-h-40 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
           {processing ? "> DECODING RADIO STREAM ▍" : sample.transcript}
         </pre>
+
+        <div className="mt-5 flex items-center justify-between">
+          <h3 className="dot-text text-[10px] text-muted-foreground">
+            03b / Translated · Neural MT
+          </h3>
+          <span className="dot-text text-[10px] text-muted-foreground">
+            {processing ? "…" : sample.translationLang}
+          </span>
+        </div>
+        <pre className="dot-text mt-3 min-h-32 overflow-x-auto rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+          {processing ? "> TRANSLATING ▍" : sample.translation}
+        </pre>
+      </div>
+
+      <div className="panel p-5">
+        <h2 className="dot-text text-xs text-muted-foreground">
+          AI Context Visual / Stable Diffusion
+        </h2>
+        <div className="mt-4 flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-background">
+          {processing ? (
+            <div className="flex flex-col items-center gap-4">
+              <DotSpinner />
+              <p className="dot-text text-[10px] text-muted-foreground">Diffusing frame…</p>
+            </div>
+          ) : (
+            <img
+              src={sample.visual}
+              alt={`AI generated context visual for lap ${sample.lap}: ${sample.visualPrompt}`}
+              loading="lazy"
+              width={768}
+              height={768}
+              className="size-full object-contain"
+            />
+          )}
+        </div>
+        <p className="dot-text mt-3 text-[10px] text-muted-foreground">
+          {processing ? "> prompt pending" : `> prompt: ${sample.visualPrompt}`}
+        </p>
       </div>
     </section>
   );
 }
+

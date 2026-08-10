@@ -103,6 +103,18 @@ export function TelemetryPanel({ activeLap }: { activeLap: number }) {
           </dd>
         </div>
       </dl>
+
+      <div className="mt-4 rounded-2xl border border-stressed glow-red bg-background p-4">
+        <div className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-stressed animate-pulse-dot" aria-hidden />
+          <h3 className="dot-text text-[10px] text-stressed">Insights / Impact Summary</h3>
+        </div>
+        <p className="dot-text mt-3 text-[11px] leading-relaxed text-foreground">
+          Critical insight: Driver is averaging +1.2 seconds slower per lap during HIGH STRESS
+          stints. Tire degradation alone does not account for this pace drop.
+        </p>
+      </div>
+
     </section>
   );
 }

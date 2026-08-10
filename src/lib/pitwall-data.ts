@@ -25,9 +25,21 @@ export const laps: Lap[] = [
   { lap: 25, time: 89.941, mood: "CALM" },
 ];
 
-import visualCalm from "@/assets/visual-calm.jpg";
-import visualTired from "@/assets/visual-tired.jpg";
-import visualStressed from "@/assets/visual-stressed.jpg";
+export type LanguageCode = "IT" | "ES" | "FR" | "JA";
+
+export const languages: { code: LanguageCode; label: string }[] = [
+  { code: "IT", label: "Italian" },
+  { code: "ES", label: "Spanish" },
+  { code: "FR", label: "French" },
+  { code: "JA", label: "Japanese" },
+];
+
+export const mockTranslations: Record<LanguageCode, string> = {
+  IT: "Le gomme anteriori sono andate... sto solo gestendo ora.",
+  ES: "Las gomas delanteras se han ido... solo estoy gestionando ahora.",
+  FR: "Les pneus avant sont morts... je gère juste maintenant.",
+  JA: "フロントタイヤがもう限界だ...今はマネジメントしている。",
+};
 
 export type Sample = {
   id: string;
@@ -36,10 +48,6 @@ export type Sample = {
   mood: Mood;
   duration: number; // seconds of the radio clip
   transcript: string;
-  translation: string;
-  translationLang: string;
-  visual: string;
-  visualPrompt: string;
   stress: number; // 0-100
   pitch: number; // 0-100
 };

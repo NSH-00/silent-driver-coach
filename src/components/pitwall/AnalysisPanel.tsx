@@ -50,7 +50,7 @@ export function AnalysisPanel({
   }, [processing, sample.id]);
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex h-full flex-col gap-4">
       <div className="panel p-5">
         <h2 className="dot-text text-xs text-muted-foreground">02 / Driver Mood</h2>
         <div className="mt-5 flex items-center justify-center rounded-2xl border border-border bg-background py-10">

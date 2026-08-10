@@ -1,10 +1,5 @@
-import {
-  languages,
-  mockTranslations,
-  moodMeta,
-  type LanguageCode,
-  type Sample,
-} from "@/lib/pitwall-data";
+import { useEffect, useState } from "react";
+import { moodMeta, type Sample } from "@/lib/pitwall-data";
 
 function Meter({ label, value }: { label: string; value: number }) {
   return (

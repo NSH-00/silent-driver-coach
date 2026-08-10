@@ -25,29 +25,15 @@ export const laps: Lap[] = [
   { lap: 25, time: 89.941, mood: "CALM" },
 ];
 
-export type LanguageCode = "IT" | "ES" | "FR" | "JA";
-
-export const languages: { code: LanguageCode; label: string }[] = [
-  { code: "IT", label: "Italian" },
-  { code: "ES", label: "Spanish" },
-  { code: "FR", label: "French" },
-  { code: "JA", label: "Japanese" },
-];
-
-export const mockTranslations: Record<LanguageCode, string> = {
-  IT: "Le gomme anteriori sono andate... sto solo gestendo ora.",
-  ES: "Las gomas delanteras se han ido... solo estoy gestionando ahora.",
-  FR: "Les pneus avant sont morts... je gère juste maintenant.",
-  JA: "フロントタイヤがもう限界だ...今はマネジメントしている。",
-};
-
 export type Sample = {
   id: string;
   label: string;
   lap: number;
   mood: Mood;
   duration: number; // seconds of the radio clip
-  transcript: string;
+  detectedLang: string; // auto-detected source language
+  transcript: string; // raw detected speech (foreign)
+  translation: string; // auto-translated English
   stress: number; // 0-100
   pitch: number; // 0-100
 };
@@ -59,8 +45,11 @@ export const samples: Sample[] = [
     lap: 14,
     mood: "CALM",
     duration: 7.4,
+    detectedLang: "ITALIAN",
     transcript:
-      "> RADIO IN // LAP 14\nDRIVER: Car feels good, balance is where I want it.\nDRIVER: I can hold this pace, no problem.\nENGINEER: Copy that. Keep it steady, target plus zero.",
+      "> RADIO IN // GIRO 14\n> LA MACCHINA VA BENE, IL BILANCIAMENTO È DOVE LO VOGLIO.\n> POSSO MANTENERE QUESTO RITMO, NESSUN PROBLEMA.",
+    translation:
+      "> CAR FEELS GOOD, BALANCE IS WHERE I WANT IT.\n> I CAN HOLD THIS PACE, NO PROBLEM.",
     stress: 18,
     pitch: 34,
   },
@@ -70,8 +59,11 @@ export const samples: Sample[] = [
     lap: 18,
     mood: "STRESSED",
     duration: 9.1,
+    detectedLang: "ITALIAN",
     transcript:
-      "> RADIO IN // LAP 18\nDRIVER: He pushed me wide! That's twice now, do something!\nDRIVER: I'm losing the rear everywhere, this is not working!\nENGINEER: Understood, breathe. We are on it.",
+      "> RADIO IN // GIRO 18\n> MI HA SPINTO FUORI! È LA SECONDA VOLTA, FATE QUALCOSA!\n> PERDO IL POSTERIORE OVUNQUE, COSÌ NON FUNZIONA!",
+    translation:
+      "> HE PUSHED ME WIDE! THAT'S TWICE NOW, DO SOMETHING!\n> I'M LOSING THE REAR EVERYWHERE, THIS IS NOT WORKING!",
     stress: 88,
     pitch: 91,
   },
@@ -81,8 +73,9 @@ export const samples: Sample[] = [
     lap: 22,
     mood: "TIRED",
     duration: 8.2,
-    transcript:
-      "> RADIO IN // LAP 22\nDRIVER: Fronts are gone... I'm just managing now.\nDRIVER: How many laps left? Getting heavy in here.\nENGINEER: Four to go. Lift and coast turn nine.",
+    detectedLang: "ITALIAN",
+    transcript: "> LE GOMME ANTERIORI SONO ANDATE... STO SOLO GESTENDO ORA.",
+    translation: "> FRONTS ARE GONE... I'M JUST MANAGING NOW.",
     stress: 52,
     pitch: 46,
   },

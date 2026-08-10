@@ -40,9 +40,15 @@ function DotSpinner() {
 export function AnalysisPanel({
   sample,
   processing,
+  lang,
+  translating,
+  onLangChange,
 }: {
   sample: Sample;
   processing: boolean;
+  lang: LanguageCode;
+  translating: boolean;
+  onLangChange: (lang: LanguageCode) => void;
 }) {
   const meta = moodMeta[sample.mood];
 

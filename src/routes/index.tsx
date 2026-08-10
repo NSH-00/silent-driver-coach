@@ -28,17 +28,15 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [sample, setSample] = useState<Sample>(samples[0]!);
+  const [sample, setSample] = useState<Sample>(
+    samples.find((s) => s.id === "lap22") ?? samples[0]!,
+  );
   const [processing, setProcessing] = useState(false);
-  const [lang, setLang] = useState<LanguageCode>("IT");
-  const [translating, setTranslating] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const langTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
       if (timer.current) clearTimeout(timer.current);
-      if (langTimer.current) clearTimeout(langTimer.current);
     };
   }, []);
 
@@ -49,13 +47,6 @@ function Index() {
       setSample(next);
       setProcessing(false);
     }, 2000);
-  };
-
-  const handleLangChange = (next: LanguageCode) => {
-    if (langTimer.current) clearTimeout(langTimer.current);
-    setLang(next);
-    setTranslating(true);
-    langTimer.current = setTimeout(() => setTranslating(false), 500);
   };
 
   return (

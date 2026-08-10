@@ -71,52 +71,52 @@ export function AnalysisPanel({
         </div>
       </div>
 
-      <div className="panel p-5">
+      <div className="panel flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between">
           <h2 className="dot-text text-xs text-muted-foreground">03 / Transcript</h2>
           <span className="dot-text text-[10px] text-primary">● LIVE</span>
         </div>
-        <pre className="dot-text mt-4 min-h-40 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
+        <pre className="dot-text mt-4 min-h-48 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
           {processing ? "> DECODING RADIO STREAM ▍" : sample.transcript}
         </pre>
 
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between">
           <h3 className="dot-text text-[10px] text-muted-foreground">
             03b / Translated · Neural MT
           </h3>
           <span className="dot-text text-[10px] text-muted-foreground">
-            {processing ? "…" : sample.translationLang}
+            {languages.find((l) => l.code === lang)?.label}
           </span>
         </div>
-        <pre className="dot-text mt-3 min-h-32 overflow-x-auto rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
-          {processing ? "> TRANSLATING ▍" : sample.translation}
-        </pre>
-      </div>
 
-      <div className="panel p-5">
-        <h2 className="dot-text text-xs text-muted-foreground">
-          AI Context Visual / Stable Diffusion
-        </h2>
-        <div className="mt-4 flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-background">
-          {processing ? (
-            <div className="flex flex-col items-center gap-4">
+        <div className="mt-3 flex flex-wrap gap-2">
+          {languages.map((l) => (
+            <button
+              key={l.code}
+              type="button"
+              onClick={() => onLangChange(l.code)}
+              aria-pressed={lang === l.code}
+              className={`dot-text rounded-full border px-3 py-1.5 text-[10px] transition-colors ${
+                lang === l.code
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-background text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="dot-text mt-3 min-h-32 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+          {processing || translating ? (
+            <div className="flex h-full flex-col items-start gap-3">
               <DotSpinner />
-              <p className="dot-text text-[10px] text-muted-foreground">Diffusing frame…</p>
+              <span className="text-[10px]">Translating…</span>
             </div>
           ) : (
-            <img
-              src={sample.visual}
-              alt={`AI generated context visual for lap ${sample.lap}: ${sample.visualPrompt}`}
-              loading="lazy"
-              width={768}
-              height={768}
-              className="size-full object-contain"
-            />
+            mockTranslations[lang]
           )}
         </div>
-        <p className="dot-text mt-3 text-[10px] text-muted-foreground">
-          {processing ? "> prompt pending" : `> prompt: ${sample.visualPrompt}`}
-        </p>
       </div>
     </section>
   );

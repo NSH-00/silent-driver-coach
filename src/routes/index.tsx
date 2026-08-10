@@ -71,13 +71,7 @@ function Index() {
           onSelect={handleSelect}
           processing={processing}
         />
-        <AnalysisPanel
-          sample={sample}
-          processing={processing}
-          lang={lang}
-          translating={translating}
-          onLangChange={handleLangChange}
-        />
+        <AnalysisPanel sample={sample} processing={processing} />
         <TelemetryPanel activeLap={sample.lap} />
       </div>
 

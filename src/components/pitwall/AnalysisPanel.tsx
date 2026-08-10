@@ -88,45 +88,31 @@ export function AnalysisPanel({
           <h2 className="dot-text text-xs text-muted-foreground">03 / Transcript</h2>
           <span className="dot-text text-[10px] text-primary">● LIVE</span>
         </div>
-        <pre className="dot-text mt-4 min-h-48 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
+        <pre className="dot-text mt-4 min-h-40 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
           {processing ? "> DECODING RADIO STREAM ▍" : sample.transcript}
         </pre>
 
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
           <h3 className="dot-text text-[10px] text-muted-foreground">
             03b / Translated · Neural MT
           </h3>
-          <span className="dot-text text-[10px] text-muted-foreground">
-            {languages.find((l) => l.code === lang)?.label}
+          <span
+            className={`dot-text rounded-full border border-primary px-3 py-1 text-[10px] text-primary ${
+              detecting ? "animate-pulse-dot" : ""
+            }`}
+          >
+            {processing ? "Detecting language…" : `Detected: ${sample.detectedLang} ➔ English`}
           </span>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          {languages.map((l) => (
-            <button
-              key={l.code}
-              type="button"
-              onClick={() => onLangChange(l.code)}
-              aria-pressed={lang === l.code}
-              className={`dot-text rounded-full border px-3 py-1.5 text-[10px] transition-colors ${
-                lang === l.code
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {l.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="dot-text mt-3 min-h-32 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
-          {processing || translating ? (
+        <div className="dot-text mt-3 min-h-40 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+          {processing ? (
             <div className="flex h-full flex-col items-start gap-3">
               <DotSpinner />
               <span className="text-[10px]">Translating…</span>
             </div>
           ) : (
-            mockTranslations[lang]
+            sample.translation
           )}
         </div>
       </div>

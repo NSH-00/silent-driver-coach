@@ -17,8 +17,9 @@ const moodVar: Record<Mood, string> = {
 };
 
 function ChartTooltip({ active, payload }: { active?: boolean; payload?: { payload: Lap }[] }) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
+  const d = payload?.[0]?.payload;
+  if (!active || !d) return null;
+
   return (
     <div className="panel px-3 py-2">
       <p className="dot-text text-[10px] text-muted-foreground">Lap {d.lap}</p>

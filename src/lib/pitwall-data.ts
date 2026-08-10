@@ -64,9 +64,6 @@ export const samples: Sample[] = [
     stress: 18,
     pitch: 34,
   },
-    stress: 18,
-    pitch: 34,
-  },
   {
     id: "lap18",
     label: "Lap 18 (Stressed)",
@@ -75,11 +72,6 @@ export const samples: Sample[] = [
     duration: 9.1,
     transcript:
       "> RADIO IN // LAP 18\nDRIVER: He pushed me wide! That's twice now, do something!\nDRIVER: I'm losing the rear everywhere, this is not working!\nENGINEER: Understood, breathe. We are on it.",
-    translation:
-      "> TRADUZIONE // GIRO 18\nPILOTA: Mi ha spinto fuori! È la seconda volta, fate qualcosa!\nPILOTA: Perdo il posteriore ovunque, così non funziona!\nINGEGNERE: Capito, respira. Ci stiamo lavorando.",
-    translationLang: "IT / Italian",
-    visual: visualStressed,
-    visualPrompt: "hazard alert, contact incident, rear instability",
     stress: 88,
     pitch: 91,
   },
@@ -91,11 +83,6 @@ export const samples: Sample[] = [
     duration: 8.2,
     transcript:
       "> RADIO IN // LAP 22\nDRIVER: Fronts are gone... I'm just managing now.\nDRIVER: How many laps left? Getting heavy in here.\nENGINEER: Four to go. Lift and coast turn nine.",
-    translation:
-      "> TRADUZIONE // GIRO 22\nPILOTA: Le anteriori sono finite... ora sto solo gestendo.\nPILOTA: Quanti giri restano? Si fa pesante qui dentro.\nINGEGNERE: Quattro alla fine. Lift and coast in curva nove.",
-    translationLang: "IT / Italian",
-    visual: visualTired,
-    visualPrompt: "worn front tyre, degradation, pace drop",
     stress: 52,
     pitch: 46,
   },

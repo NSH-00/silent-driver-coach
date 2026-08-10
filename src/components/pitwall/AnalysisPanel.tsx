@@ -35,17 +35,19 @@ function DotSpinner() {
 export function AnalysisPanel({
   sample,
   processing,
-  lang,
-  translating,
-  onLangChange,
 }: {
   sample: Sample;
   processing: boolean;
-  lang: LanguageCode;
-  translating: boolean;
-  onLangChange: (lang: LanguageCode) => void;
 }) {
   const meta = moodMeta[sample.mood];
+  const [detecting, setDetecting] = useState(true);
+
+  useEffect(() => {
+    if (processing) return;
+    setDetecting(true);
+    const t = setTimeout(() => setDetecting(false), 1800);
+    return () => clearTimeout(t);
+  }, [processing, sample.id]);
 
   return (
     <section className="flex flex-col gap-4">

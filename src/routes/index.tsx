@@ -32,7 +32,12 @@ function Index() {
   const [processing, setProcessing] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => timer.current && clearTimeout(timer.current), []);
+  useEffect(() => {
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
+
 
   const handleSelect = (next: Sample) => {
     if (timer.current) clearTimeout(timer.current);

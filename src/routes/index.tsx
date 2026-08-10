@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AudioPanel } from "@/components/pitwall/AudioPanel";
 import { AnalysisPanel } from "@/components/pitwall/AnalysisPanel";
 import { TelemetryPanel } from "@/components/pitwall/TelemetryPanel";
-import { samples, type Sample } from "@/lib/pitwall-data";
+import { samples, type LanguageCode, type Sample } from "@/lib/pitwall-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, Upload } from "lucide-react";
+import { Play, Pause, Upload, Mic, Radio } from "lucide-react";
 import { formatTimer, type Sample } from "@/lib/pitwall-data";
 
 const BAR_COUNT = 44;
@@ -19,6 +19,7 @@ export function AudioPanel({
   const [elapsed, setElapsed] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [vad, setVad] = useState(false);
   const raf = useRef<number | null>(null);
 
   useEffect(() => {
@@ -55,13 +56,51 @@ export function AudioPanel({
   );
 
   const progress = elapsed / sample.duration;
+  const standby = vad && !playing;
+
+  const trigger = () => {
+    setVad(true);
+    setElapsed(0);
+    setPlaying(true);
+  };
 
   return (
-    <section className="panel flex flex-col gap-6 p-5">
+    <section className="panel flex h-full flex-col gap-6 p-5">
       <div className="flex items-baseline justify-between">
         <h2 className="dot-text text-xs text-muted-foreground">01 / Radio Input</h2>
         <span className="dot-text text-[10px] text-muted-foreground">.wav</span>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setVad((v) => !v);
+          setPlaying(false);
+          setElapsed(0);
+        }}
+        aria-pressed={vad}
+        className={`dot-text flex items-center justify-between gap-3 rounded-full border px-4 py-2.5 text-[10px] transition-all duration-150 ${
+          vad
+            ? "border-primary bg-primary/10 text-primary glow-red"
+            : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <span className="flex items-center gap-2">
+          <Mic className={`size-3.5 ${vad ? "animate-pulse-dot" : ""}`} strokeWidth={1.5} />
+          Auto-detect (VAD)
+        </span>
+        <span
+          className={`relative h-4 w-8 rounded-full transition-colors duration-150 ${
+            vad ? "bg-primary" : "bg-muted"
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 size-3 rounded-full bg-background transition-all duration-150 ${
+              vad ? "left-[18px]" : "left-0.5"
+            }`}
+          />
+        </span>
+      </button>
 
       <div
         onDragOver={(e) => {
@@ -105,11 +144,21 @@ export function AudioPanel({
         })}
       </div>
 
-      <div className="rounded-2xl border border-border bg-background p-5">
+      <div
+        className={`rounded-2xl border bg-background p-5 transition-all duration-150 ${
+          standby ? "border-primary/40" : "border-border"
+        }`}
+      >
         <div className="flex items-center justify-between">
-          <span className="dot-text text-3xl tabular-nums animate-flicker">{formatTimer(elapsed)}</span>
+          {standby ? (
+            <span className="dot-text animate-blink text-xl text-primary tabular-nums">
+              &gt; Listening...
+            </span>
+          ) : (
+            <span className="dot-text text-3xl tabular-nums animate-flicker">{formatTimer(elapsed)}</span>
+          )}
           <span className="dot-text text-[10px] text-muted-foreground">
-            / {formatTimer(sample.duration)}
+            {standby ? "VAD armed" : `/ ${formatTimer(sample.duration)}`}
           </span>
         </div>
 
@@ -120,11 +169,15 @@ export function AudioPanel({
               <span
                 key={i}
                 style={{
-                  height: `${h * 100}%`,
+                  height: standby ? "6%" : `${h * 100}%`,
                   animationDelay: `${(i % 9) * 0.08}s`,
                 }}
-                className={`flex-1 origin-center rounded-full ${
-                  played ? "bg-primary" : "bg-muted-foreground/40"
+                className={`flex-1 origin-center rounded-full transition-[height,background-color] duration-150 ${
+                  standby
+                    ? "bg-muted-foreground/30 animate-ambient"
+                    : played
+                      ? "bg-primary"
+                      : "bg-muted-foreground/40"
                 } ${playing ? "animate-bar" : ""}`}
               />
             );
@@ -153,15 +206,26 @@ export function AudioPanel({
             <div className="h-[3px] w-full rounded-full bg-muted">
               <div
                 className="h-full rounded-full bg-foreground transition-[width] duration-100"
-                style={{ width: `${Math.min(progress, 1) * 100}%` }}
+                style={{ width: `${standby ? 0 : Math.min(progress, 1) * 100}%` }}
               />
             </div>
             <p className="dot-text mt-2 text-[10px] text-muted-foreground">
-              Lap {sample.lap} · Team radio · 48kHz mono
+              {standby
+                ? "Mic hot · threshold -42dB · ambient"
+                : `Lap ${sample.lap} · Team radio · 48kHz mono`}
             </p>
           </div>
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={trigger}
+        className="dot-text flex items-center justify-center gap-2 rounded-full border border-border bg-secondary px-4 py-2.5 text-[10px] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+      >
+        <Radio className="size-3.5" strokeWidth={1.5} />
+        Simulate voice trigger
+      </button>
     </section>
   );
 }

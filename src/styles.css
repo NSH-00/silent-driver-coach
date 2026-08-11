@@ -52,6 +52,8 @@
   --animate-pulse-dot: pulse-dot 1.4s ease-in-out infinite;
   --animate-bar: bar 0.9s ease-in-out infinite;
   --animate-flicker: flicker 3s linear infinite;
+  --animate-blink: blink 1s steps(1, end) infinite;
+  --animate-ambient: ambient 2.2s ease-in-out infinite;
 }
 
 :root {
@@ -160,5 +162,28 @@
   }
   97% {
     opacity: 0.82;
+  }
+}
+
+@keyframes blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes ambient {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1.8);
+    opacity: 1;
   }
 }

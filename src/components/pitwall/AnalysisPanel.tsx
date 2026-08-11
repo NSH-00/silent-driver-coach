@@ -52,8 +52,13 @@ export function AnalysisPanel({
   return (
     <section className="flex h-full flex-col gap-4">
       <div className="panel p-5">
-        <h2 className="dot-text text-xs text-muted-foreground">02 / Driver Mood</h2>
-        <div className="mt-5 flex items-center justify-center rounded-2xl border border-border bg-background py-10">
+        <div className="flex items-baseline justify-between">
+          <h2 className="dot-text text-xs text-muted-foreground">02 / Driver Mood</h2>
+          <span className="dot-text text-[10px] text-muted-foreground">
+            {sample.live ? "Live upload" : "Archive clip"} · Lap {sample.lap}
+          </span>
+        </div>
+        <div className="mt-5 flex items-center justify-center rounded-2xl border border-border bg-background py-8">
           {processing ? (
             <div className="flex flex-col items-center gap-4">
               <DotSpinner />
@@ -76,7 +81,7 @@ export function AnalysisPanel({
         </div>
         <div className="mt-5 grid gap-4">
           <Meter label="Stress confidence" value={processing ? 0 : sample.stress} />
-          <Meter label="Vocal pitch" value={processing ? 0 : sample.pitch} />
+          <Meter label="Voice intensity / pitch" value={processing ? 0 : sample.pitch} />
         </div>
       </div>
 
@@ -85,7 +90,7 @@ export function AnalysisPanel({
           <h2 className="dot-text text-xs text-muted-foreground">03 / Transcript</h2>
           <span className="dot-text text-[10px] text-primary">● LIVE</span>
         </div>
-        <pre className="dot-text mt-4 min-h-40 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
+        <pre className="dot-text mt-4 min-h-32 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
           {processing ? "> DECODING RADIO STREAM ▍" : sample.transcript}
         </pre>
 
@@ -102,7 +107,7 @@ export function AnalysisPanel({
           </span>
         </div>
 
-        <div className="dot-text mt-3 min-h-40 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
+        <div className="dot-text mt-3 min-h-32 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
           {processing ? (
             <div className="flex h-full flex-col items-start gap-3">
               <DotSpinner />
@@ -116,4 +121,3 @@ export function AnalysisPanel({
     </section>
   );
 }
-

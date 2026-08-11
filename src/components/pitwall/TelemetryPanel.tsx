@@ -8,7 +8,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { formatLapTime, laps, moodMeta, type Lap, type Mood } from "@/lib/pitwall-data";
+import {
+  buildInsight,
+  formatDelta,
+  formatLapTime,
+  moodAverages,
+  moodMeta,
+  type Lap,
+  type Mood,
+} from "@/lib/pitwall-data";
 
 const moodVar: Record<Mood, string> = {
   CALM: "var(--calm)",
@@ -22,14 +30,35 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: { paylo
 
   return (
     <div className="panel px-3 py-2">
-      <p className="dot-text text-[10px] text-muted-foreground">Lap {d.lap}</p>
+      <p className="dot-text text-[10px] text-muted-foreground">
+        Lap {d.lap}
+        {d.live ? " · live" : ""}
+      </p>
       <p className="dot-text text-sm">{formatLapTime(d.time)}</p>
       <p className={`dot-text text-[10px] ${moodMeta[d.mood].text}`}>{d.mood}</p>
     </div>
   );
 }
 
-export function TelemetryPanel({ activeLap }: { activeLap: number }) {
+export function TelemetryPanel({
+  laps,
+  activeLap,
+  onSelectLap,
+}: {
+  laps: Lap[];
+  activeLap: number;
+  onSelectLap: (lap: number) => void;
+}) {
+  const active = laps.find((l) => l.lap === activeLap);
+  const avgs = moodAverages(laps);
+  const calmAvg = avgs.CALM.avg;
+  const times = laps.map((l) => l.time);
+  const min = Math.min(...times);
+  const max = Math.max(...times);
+  const best = laps.reduce((a, l) => (l.time < a.time ? l : a), laps[0]!);
+  const delta = active && calmAvg != null ? active.time - calmAvg : null;
+  const insight = buildInsight(laps);
+
   return (
     <section className="panel flex h-full flex-col p-5">
       <div className="flex items-baseline justify-between">
@@ -37,7 +66,26 @@ export function TelemetryPanel({ activeLap }: { activeLap: number }) {
         <span className="dot-text text-[10px] text-muted-foreground">Lap time vs mood</span>
       </div>
 
-      <div className="mt-6 h-72">
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {laps.map((l) => (
+          <button
+            key={l.lap}
+            type="button"
+            onClick={() => onSelectLap(l.lap)}
+            aria-pressed={l.lap === activeLap}
+            className={`dot-text rounded-md border px-2 py-1 text-[9px] tabular-nums transition-colors ${
+              l.lap === activeLap
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-secondary text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+            }`}
+          >
+            {l.lap}
+            {l.live ? "•" : ""}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5 h-60">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={laps} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
             <CartesianGrid stroke="var(--border)" vertical={false} />
@@ -48,7 +96,7 @@ export function TelemetryPanel({ activeLap }: { activeLap: number }) {
               tickLine={false}
             />
             <YAxis
-              domain={[89, 92.5]}
+              domain={[Math.floor((min - 0.4) * 10) / 10, Math.ceil((max + 0.4) * 10) / 10]}
               stroke="var(--muted-foreground)"
               tick={{ fontFamily: "var(--font-dot)", fontSize: 10 }}
               tickLine={false}
@@ -82,16 +130,18 @@ export function TelemetryPanel({ activeLap }: { activeLap: number }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-4 border-t border-border pt-4">
+      <div className="mt-5 flex flex-wrap gap-4 border-t border-border pt-4">
         {(["CALM", "TIRED", "STRESSED"] as Mood[]).map((m) => (
           <div key={m} className="flex items-center gap-2">
             <span className={`size-2 rounded-full ${moodMeta[m].dot}`} />
-            <span className="dot-text text-[10px] text-muted-foreground">{m}</span>
+            <span className="dot-text text-[10px] text-muted-foreground">
+              {m} · {avgs[m].avg != null ? formatLapTime(avgs[m].avg!) : "—"} ({avgs[m].count})
+            </span>
           </div>
         ))}
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3">
+      <dl className="mt-4 grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-border bg-background p-3">
           <dt className="dot-text text-[10px] text-muted-foreground">Active lap</dt>
           <dd className="dot-text mt-1 text-xl tabular-nums">{activeLap}</dd>
@@ -99,22 +149,59 @@ export function TelemetryPanel({ activeLap }: { activeLap: number }) {
         <div className="rounded-xl border border-border bg-background p-3">
           <dt className="dot-text text-[10px] text-muted-foreground">Lap time</dt>
           <dd className="dot-text mt-1 text-xl tabular-nums">
-            {formatLapTime(laps.find((l) => l.lap === activeLap)?.time ?? 90)}
+            {active ? formatLapTime(active.time) : "—"}
+          </dd>
+        </div>
+        <div className="rounded-xl border border-border bg-background p-3">
+          <dt className="dot-text text-[10px] text-muted-foreground">Δ vs calm avg</dt>
+          <dd
+            className={`dot-text mt-1 text-xl tabular-nums ${
+              delta == null ? "" : delta > 0.05 ? "text-stressed" : "text-calm"
+            }`}
+          >
+            {delta == null ? "—" : formatDelta(delta)}
           </dd>
         </div>
       </dl>
 
-      <div className="mt-4 rounded-2xl border border-stressed glow-red bg-background p-4">
-        <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-stressed animate-pulse-dot" aria-hidden />
-          <h3 className="dot-text text-[10px] text-stressed">Insights / Impact Summary</h3>
-        </div>
-        <p className="dot-text mt-3 text-[11px] leading-relaxed text-foreground">
-          Critical insight: Driver is averaging +1.2 seconds slower per lap during HIGH STRESS
-          stints. Tire degradation alone does not account for this pace drop.
-        </p>
-      </div>
+      <p className="dot-text mt-3 text-[10px] text-muted-foreground">
+        Best lap {best.lap} · {formatLapTime(best.time)} · {laps.length} laps classified
+      </p>
 
+      <div
+        className={`mt-4 rounded-2xl border bg-background p-4 ${
+          insight.level === "CRITICAL"
+            ? "border-stressed glow-red"
+            : insight.level === "WATCH"
+              ? "border-tired"
+              : "border-border"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className={`size-2 rounded-full animate-pulse-dot ${
+              insight.level === "CRITICAL"
+                ? "bg-stressed"
+                : insight.level === "WATCH"
+                  ? "bg-tired"
+                  : "bg-muted-foreground"
+            }`}
+            aria-hidden
+          />
+          <h3
+            className={`dot-text text-[10px] ${
+              insight.level === "CRITICAL"
+                ? "text-stressed"
+                : insight.level === "WATCH"
+                  ? "text-tired"
+                  : "text-muted-foreground"
+            }`}
+          >
+            Insights / Impact Summary
+          </h3>
+        </div>
+        <p className="dot-text mt-3 text-[11px] leading-relaxed text-foreground">{insight.text}</p>
+      </div>
     </section>
   );
 }

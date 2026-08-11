@@ -148,14 +148,14 @@ export function TelemetryPanel({
         </div>
         <div className="rounded-xl border border-border bg-background p-3">
           <dt className="dot-text text-[10px] text-muted-foreground">Lap time</dt>
-          <dd className="dot-text mt-1 text-xl tabular-nums">
+          <dd className="dot-text mt-1 text-base tabular-nums">
             {active ? formatLapTime(active.time) : "—"}
           </dd>
         </div>
         <div className="rounded-xl border border-border bg-background p-3">
-          <dt className="dot-text text-[10px] text-muted-foreground">Δ vs calm avg</dt>
+          <dt className="dot-text text-[10px] text-muted-foreground">Δ vs calm</dt>
           <dd
-            className={`dot-text mt-1 text-xl tabular-nums ${
+            className={`dot-text mt-1 text-base tabular-nums ${
               delta == null ? "" : delta > 0.05 ? "text-stressed" : "text-calm"
             }`}
           >

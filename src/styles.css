@@ -52,6 +52,8 @@
   --animate-pulse-dot: pulse-dot 1.4s ease-in-out infinite;
   --animate-bar: bar 0.9s ease-in-out infinite;
   --animate-flicker: flicker 3s linear infinite;
+  --animate-blink: blink 1s steps(1, end) infinite;
+  --animate-ambient: ambient 2.2s ease-in-out infinite;
 }
 
 :root {

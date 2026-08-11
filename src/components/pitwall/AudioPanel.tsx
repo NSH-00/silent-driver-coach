@@ -3,17 +3,24 @@ import { Play, Pause, Upload, Mic, Radio } from "lucide-react";
 import { formatTimer, type Sample } from "@/lib/pitwall-data";
 
 const BAR_COUNT = 44;
+const ACCEPTED = [".wav", ".mp3"];
 
 export function AudioPanel({
   sample,
   samples,
   onSelect,
+  onUpload,
   processing,
+  progress,
+  stage,
 }: {
   sample: Sample;
   samples: Sample[];
   onSelect: (s: Sample) => void;
+  onUpload: (file: File) => void;
   processing: boolean;
+  progress: number;
+  stage: string;
 }) {
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -21,6 +28,7 @@ export function AudioPanel({
   const [fileName, setFileName] = useState<string | null>(null);
   const [vad, setVad] = useState(false);
   const raf = useRef<number | null>(null);
+  const input = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setPlaying(false);
@@ -51,12 +59,21 @@ export function AudioPanel({
 
   const heights = useMemo(
     () =>
-      Array.from({ length: BAR_COUNT }, (_, i) => 0.28 + Math.abs(Math.sin(i * 1.7 + sample.lap)) * 0.72),
+      Array.from(
+        { length: BAR_COUNT },
+        (_, i) => 0.28 + Math.abs(Math.sin(i * 1.7 + sample.lap)) * 0.72,
+      ),
     [sample.lap],
   );
 
-  const progress = elapsed / sample.duration;
+  const progressRatio = elapsed / sample.duration;
   const standby = vad && !playing;
+
+  const handleFile = (f: File | undefined | null) => {
+    if (!f) return;
+    setFileName(f.name);
+    onUpload(f);
+  };
 
   const trigger = () => {
     setVad(true);
@@ -65,10 +82,10 @@ export function AudioPanel({
   };
 
   return (
-    <section className="panel flex h-full flex-col gap-6 p-5">
+    <section className="panel flex h-full flex-col gap-5 p-5">
       <div className="flex items-baseline justify-between">
         <h2 className="dot-text text-xs text-muted-foreground">01 / Radio Input</h2>
-        <span className="dot-text text-[10px] text-muted-foreground">.wav</span>
+        <span className="dot-text text-[10px] text-muted-foreground">.wav / .mp3</span>
       </div>
 
       <button
@@ -111,17 +128,53 @@ export function AudioPanel({
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          const f = e.dataTransfer.files?.[0];
-          if (f) setFileName(f.name);
+          handleFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex flex-col items-center gap-2 rounded-xl border border-dashed px-4 py-8 text-center transition-colors ${
+        className={`flex flex-col items-center gap-2 rounded-xl border border-dashed px-4 py-7 text-center transition-colors ${
           dragging ? "border-primary bg-primary/5" : "border-border"
         }`}
       >
+        <input
+          ref={input}
+          type="file"
+          accept={`${ACCEPTED.join(",")},audio/wav,audio/mpeg`}
+          className="hidden"
+          onChange={(e) => {
+            handleFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
         <Upload className="size-5 text-muted-foreground" strokeWidth={1.5} />
-        <p className="dot-text text-[11px]">{fileName ?? "Drop radio .wav"}</p>
-        <p className="text-xs text-muted-foreground">or pick a quick sample below</p>
+        <p className="dot-text text-[11px]">{fileName ?? "Drop radio .wav or .mp3"}</p>
+        <button
+          type="button"
+          disabled={processing}
+          onClick={() => input.current?.click()}
+          className="dot-text rounded-full border border-border bg-secondary px-3 py-1 text-[10px] text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
+        >
+          Browse file
+        </button>
       </div>
+
+      {processing && (
+        <div className="rounded-xl border border-primary/40 bg-primary/5 p-4">
+          <div className="flex items-center justify-between">
+            <span className="dot-text animate-pulse-dot text-[10px] text-primary">{stage}</span>
+            <span className="dot-text text-[10px] tabular-nums text-primary">
+              {Math.round(progress)}%
+            </span>
+          </div>
+          <div className="mt-3 h-[6px] w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="dot-text mt-2 text-[9px] text-muted-foreground">
+            AI pipeline typically takes 10–30s · do not close the pit-wall view
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {samples.map((s) => {
@@ -155,16 +208,18 @@ export function AudioPanel({
               &gt; Listening...
             </span>
           ) : (
-            <span className="dot-text text-3xl tabular-nums animate-flicker">{formatTimer(elapsed)}</span>
+            <span className="dot-text text-3xl tabular-nums animate-flicker">
+              {formatTimer(elapsed)}
+            </span>
           )}
           <span className="dot-text text-[10px] text-muted-foreground">
             {standby ? "VAD armed" : `/ ${formatTimer(sample.duration)}`}
           </span>
         </div>
 
-        <div className="mt-5 flex h-24 items-center gap-[3px]">
+        <div className="mt-5 flex h-20 items-center gap-[3px]">
           {heights.map((h, i) => {
-            const played = i / BAR_COUNT <= progress;
+            const played = i / BAR_COUNT <= progressRatio;
             return (
               <span
                 key={i}
@@ -206,7 +261,7 @@ export function AudioPanel({
             <div className="h-[3px] w-full rounded-full bg-muted">
               <div
                 className="h-full rounded-full bg-foreground transition-[width] duration-100"
-                style={{ width: `${standby ? 0 : Math.min(progress, 1) * 100}%` }}
+                style={{ width: `${standby ? 0 : Math.min(progressRatio, 1) * 100}%` }}
               />
             </div>
             <p className="dot-text mt-2 text-[10px] text-muted-foreground">
@@ -226,6 +281,10 @@ export function AudioPanel({
         <Radio className="size-3.5" strokeWidth={1.5} />
         Simulate voice trigger
       </button>
+
+      <p className="dot-text mt-auto text-[9px] leading-relaxed text-muted-foreground">
+        FIA-safe: pit-wall analysis only, no automated car control.
+      </p>
     </section>
   );
 }

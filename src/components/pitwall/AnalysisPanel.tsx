@@ -40,14 +40,8 @@ export function AnalysisPanel({
   processing: boolean;
 }) {
   const meta = moodMeta[sample.mood];
-  const [detecting, setDetecting] = useState(true);
-
-  useEffect(() => {
-    if (processing) return;
-    setDetecting(true);
-    const t = setTimeout(() => setDetecting(false), 1800);
-    return () => clearTimeout(t);
-  }, [processing, sample.id]);
+  const isEnglish = sample.detectedLang.toUpperCase() === "ENGLISH";
+  const transcriptText = isEnglish ? sample.transcript : sample.translation;
 
   return (
     <section className="flex h-full flex-col gap-4">
@@ -87,37 +81,16 @@ export function AnalysisPanel({
 
       <div className="panel flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between">
-          <h2 className="dot-text text-xs text-muted-foreground">03 / Transcript</h2>
+          <h2 className="dot-text text-xs text-muted-foreground">
+            03 / {isEnglish ? "Transcript" : "Engineer-readable transcript"}
+          </h2>
           <span className="dot-text text-[10px] text-primary">● LIVE</span>
         </div>
-        <pre className="dot-text mt-4 min-h-32 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
-          {processing ? "> DECODING RADIO STREAM ▍" : sample.transcript}
+        <pre className="dot-text mt-4 min-h-48 flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-foreground">
+          {processing ? "> DECODING RADIO STREAM ▍" : transcriptText}
         </pre>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="dot-text text-[10px] text-muted-foreground">
-            03b / Translated · Neural MT
-          </h3>
-          <span
-            className={`dot-text rounded-full border border-primary px-3 py-1 text-[10px] text-primary ${
-              detecting ? "animate-pulse-dot" : ""
-            }`}
-          >
-            {processing ? "Detecting language…" : `Detected: ${sample.detectedLang} ➔ English`}
-          </span>
-        </div>
-
-        <div className="dot-text mt-3 min-h-32 flex-1 rounded-xl border border-border border-dashed bg-muted/40 p-4 text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
-          {processing ? (
-            <div className="flex h-full flex-col items-start gap-3">
-              <DotSpinner />
-              <span className="text-[10px]">Translating…</span>
-            </div>
-          ) : (
-            sample.translation
-          )}
-        </div>
       </div>
     </section>
   );
 }
+

@@ -152,8 +152,11 @@ export function TelemetryPanel({
             {active ? formatLapTime(active.time) : "—"}
           </dd>
         </div>
-        <div className="rounded-xl border border-border bg-background p-3">
-          <dt className="dot-text text-[10px] text-muted-foreground">Δ vs calm</dt>
+        <div
+          className="rounded-xl border border-border bg-background p-3"
+          title="Current lap time minus average calm-lap time. Positive means slower than calm baseline."
+        >
+          <dt className="dot-text text-[10px] text-muted-foreground">Pace loss vs calm avg</dt>
           <dd
             className={`dot-text mt-1 text-base tabular-nums ${
               delta == null ? "" : delta > 0.05 ? "text-stressed" : "text-calm"
@@ -163,6 +166,12 @@ export function TelemetryPanel({
           </dd>
         </div>
       </dl>
+
+      <p className="dot-text mt-2 text-[10px] leading-relaxed text-muted-foreground">
+        Pace loss vs calm avg: current lap time minus average calm-lap time. Positive means slower
+        than calm baseline.
+      </p>
+
 
       <p className="dot-text mt-3 text-[10px] text-muted-foreground">
         Best lap {best.lap} · {formatLapTime(best.time)} · {laps.length} laps classified

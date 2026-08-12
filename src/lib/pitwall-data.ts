@@ -136,26 +136,28 @@ export function buildInsight(data: Lap[]) {
   if (calm == null || (stressed == null && tired == null)) {
     return {
       level: "INFO" as const,
-      text: "Baseline building: not enough classified laps yet to correlate driver mood with pace. Analyse more radio calls to unlock the impact summary.",
+      text: "Baseline building: not enough classified laps yet to link driver mood with pace. Analyse more radio calls to unlock the impact summary.",
     };
   }
 
   const worstMood: Mood = (stressed ?? -Infinity) >= (tired ?? -Infinity) ? "STRESSED" : "TIRED";
   const worst = worstMood === "STRESSED" ? stressed! : tired!;
   const delta = worst - calm;
+  const label = worstMood === "STRESSED" ? "stressed" : "tired";
 
   if (delta <= 0.15) {
     return {
       level: "INFO" as const,
-      text: `Pace is mood-neutral: ${worstMood} laps average ${formatDelta(delta)} vs CALM baseline ${formatLapTime(calm)}. No stress-driven pace loss detected in this stint.`,
+      text: `During ${label} laps, average pace is within ${Math.abs(delta).toFixed(3)}s of calm laps (calm average ${formatLapTime(calm)}). No stress-driven pace loss detected in this stint.`,
     };
   }
 
   return {
     level: delta >= 0.6 ? ("CRITICAL" as const) : ("WATCH" as const),
-    text: `${delta >= 0.6 ? "CRITICAL INSIGHT" : "WATCH"}: Driver is averaging ${formatDelta(delta)} per lap during ${worstMood} stints (${formatLapTime(worst)} vs CALM baseline ${formatLapTime(calm)}). Tire degradation alone does not account for this pace drop.`,
+    text: `${delta >= 0.6 ? "CRITICAL" : "WATCH"}: During ${label} laps, average pace is +${delta.toFixed(3)}s slower than calm laps (${formatLapTime(worst)} vs calm average ${formatLapTime(calm)}). Tire degradation alone does not account for this pace drop.`,
   };
 }
+
 
 /** Deterministic mock of the audio analysis pipeline for an uploaded file. */
 export function buildLiveSample(file: File, lap: number): { sample: Sample; lapRow: Lap } {

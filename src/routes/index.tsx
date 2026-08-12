@@ -128,7 +128,7 @@ function Index() {
       setSampleList((prev) => [...prev, live]);
       setSample(live);
       toast.success(`Analysis complete · Lap ${live.lap}`, {
-        description: `${live.mood} · stress ${live.stress}% · ${live.detectedLang} ➔ English`,
+        description: `${live.mood} · stress ${live.stress}% · pitch ${live.pitch}%`,
       });
     });
   };
